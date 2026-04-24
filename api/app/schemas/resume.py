@@ -1,12 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
+from uuid import UUID
 
 
 # -----------------------------
 # Request (upload / create)
 # -----------------------------
 class ResumeCreate(BaseModel):
-    user_id: str
+    user_id: UUID
     file_name: str
 
 
@@ -31,7 +32,7 @@ class ResumeStructured(BaseModel):
 # -----------------------------
 class ResumeOut(BaseModel):
     id: int
-    user_id: str
+    user_id: UUID
     file_name: str
 
     raw_text: Optional[str] = None

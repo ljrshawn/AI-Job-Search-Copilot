@@ -1,0 +1,14 @@
+info:
+  name: Health_Check
+  type: http
+
+http:
+  method: GET
+  url: "{{HOST}}/health"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

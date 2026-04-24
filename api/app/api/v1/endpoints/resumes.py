@@ -1,14 +1,15 @@
 from fastapi import APIRouter, UploadFile
+from app.services.resume_service import process_resume
 
 router = APIRouter()
 
 
 @router.post("/upload")
-async def upload_resume(resume: UploadFile):
+async def upload_resume(file: UploadFile):
     """
 
-    :param resume:
+    :param file:
     :return:
     """
-    result = "success"
-    return {"result": result}
+    result = process_resume(file.file)
+    return {"result": "success"}
