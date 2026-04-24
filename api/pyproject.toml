@@ -1,0 +1,39 @@
+[project]
+name = "ai-job-search-copilot"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "shawnlyu", email = "jingran.lyu@gmail.com"}
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi (>=0.136.1,<0.137.0)",
+    "uvicorn (>=0.46.0,<0.47.0)",
+    "pydantic (>=2.13.3,<3.0.0)",
+    "pydantic-settings (>=2.0.0,<3.0.0)",
+    "python-dotenv (>=1.2.2,<2.0.0)",
+    "openai (>=2.32.0,<3.0.0)",
+    "sqlalchemy (>=2.0.49,<3.0.0)",
+    "psycopg (>=3.3.3,<4.0.0)",
+    "alembic (>=1.18.4,<2.0.0)",
+    "pgvector (>=0.4.2,<0.5.0)",
+    "pdfplumber (>=0.11.9,<0.12.0)",
+    "ruff (>=0.15.11,<0.16.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+[tool.ruff]
+line-length = 88
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.3,<10.0.0)",
+    "black (>=26.3.1,<27.0.0)",
+    "isort (>=8.0.1,<9.0.0)"
+]
