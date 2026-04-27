@@ -1,10 +1,12 @@
 from fastapi import APIRouter, UploadFile
+from starlette import status
+
 from app.services.resume_service import process_resume
 
-router = APIRouter()
+router = APIRouter(prefix="/resumes", tags=["resumes"])
 
 
-@router.post("/upload")
+@router.post("/upload", status_code=status.HTTP_201_CREATED)
 async def upload_resume(file: UploadFile):
     """
 

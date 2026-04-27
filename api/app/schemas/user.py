@@ -1,15 +1,72 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+import re
+from typing import Optional
+
+from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
 
 
-# -----------------------------
-# Request (create)
-# -----------------------------
-class UserCreate(BaseModel):
-    username: str
-    password: str
-    email: str
-    first_name: str
-    last_name: str
-   
+def _validate_password_complexity(value: str) -> str:
+    if not re.search(r"[a-z]", value):
+        raise ValueError("Password must include at least one lowercase letter")
+    if not re.search(r"[A-Z]", value):
+        raise ValueError("Password must include at least one uppercase letter")
+    if not re.search(r"\d", value):
+        raise ValueError("Password must include at least one number")
+    if not re.search(r"[^A-Za-z0-9]", value):
+        raise ValueError("Password must include at least one special character")
+    return value
+
+
+class UserBase(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    email: str = Field(min_length=5, max_length=255)
+    first_name: Optional[str] = Field(default=None, max_length=100)
+    last_name: Optional[str] = Field(default=None, max_length=100)
+
+
+class UserCreate(UserBase):
+    password: str = Field(min_length=8, max_length=255)
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return _validate_password_complexity(value)
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = Field(default=None, min_length=3, max_length=50)
+    email: Optional[str] = Field(default=None, min_length=5, max_length=255)
+    first_name: Optional[str] = Field(default=None, max_length=100)
+    last_name: Optional[str] = Field(default=None, max_length=100)
+    password: Optional[str] = Field(default=None, min_length=8, max_length=255)
+    alert: Optional[bool] = None
+    status: Optional[bool] = None
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return value
+        return _validate_password_complexity(value)
+
+
+class UserOut(UserBase):
+    id: UUID
+    alert: bool = False
+    status: bool = False
+
+    class Config:
+        from_attributes = True
+
+
+class UserLogin(BaseModel):
+    """Request schema for user login."""
+    email: str = Field(min_length=5, max_length=255)
+    password: str = Field(min_length=8, max_length=255)
+
+
+class UserLoginResponse(BaseModel):
+    """Response schema for successful login."""
+    user: UserOut
+    token: str
+
