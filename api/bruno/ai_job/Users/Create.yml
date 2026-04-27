@@ -14,7 +14,7 @@ http:
         "email": "admin@shawnl.dev",
         "first_name": "Shawn",
         "last_name": "L",
-        "password": "test123$"
+        "password": "Test123$"
       }
   auth: inherit
 
@@ -23,4 +23,3 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
-​

@@ -1,0 +1,17 @@
+info:
+  name: Upload
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URL}}/resumes/upload"
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

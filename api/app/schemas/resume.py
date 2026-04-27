@@ -14,6 +14,17 @@ class ResumeCreate(BaseModel):
 # -----------------------------
 # AI-parsed structured resume
 # -----------------------------
+class Education(BaseModel):
+    school: Optional[str]
+    degree: Optional[str]
+    year: Optional[str]
+
+
+class Project(BaseModel):
+    name: Optional[str]
+    description: Optional[str]
+
+
 class ResumeStructured(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
@@ -21,8 +32,8 @@ class ResumeStructured(BaseModel):
     skills: List[str] = Field(default_factory=list)
     experience_years: Optional[int] = None
 
-    education: List[Dict[str, Any]] = Field(default_factory=list)
-    projects: List[Dict[str, Any]] = Field(default_factory=list)
+    education: List[Education] = Field(default_factory=list)
+    projects: List[Project] = Field(default_factory=list)
 
     summary: Optional[str] = None
 
