@@ -1,0 +1,7 @@
+info:
+  name: fetch_job
+  type: folder
+  seq: 5
+
+request:
+  auth: inherit

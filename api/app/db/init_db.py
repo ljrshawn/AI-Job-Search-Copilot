@@ -6,10 +6,10 @@ from typing import Generator
 from app.db.base import Base
 from app.core.config import settings
 
-from app.models import user, resume
+from app.models import user, resume, job
 
 # Ensure models are imported so SQLAlchemy registers tables on Base.metadata.
-_ = (user, resume)
+_ = (user, resume, job)
 
 
 @lru_cache

@@ -4,3 +4,5 @@ variables:
     value: http://127.0.0.1:8000
   - name: URL
     value: "{{HOST}}/api/v1"
+  - name: SEEK_URL
+    value: https://www.seek.com.au/graphql
