@@ -1,18 +1,19 @@
-from app.services.ai_services import parse_resume
-from app.utils.file_parser import extract_text
+from app.models.resume import Resume
+from app.schemas.resume import ResumeOut
+from app.utils.process_resume import process_resume
 
 
-def process_resume(file, filename: str):
-    text = extract_text(file, filename)
-    
-    try:
-        structured = parse_resume(text)
-        structured_dict = structured.model_dump()
-    except Exception as e:
-        print(f"Warning: Could not parse resume with AI: {e}")
-        structured_dict = {}
+def create_resume(db, payload) -> ResumeOut:
+    processed_resume = process_resume(payload.file.file, payload.file.filename)
 
-    return {
-        "raw_text": text,
-        "structured_data": structured_dict
-    }
+    resume = Resume(
+        user_id=payload.user_id,
+        file_name=processed_resume["file_name"],
+        raw_text=processed_resume["raw_text"],
+        structured_data=processed_resume["structured_data"],
+        embedding_vector=processed_resume.get("embedding_vector"),
+    )
+    db.add(resume)
+    db.commit()
+    db.refresh(resume)
+    return ResumeOut.model_validate(resume)

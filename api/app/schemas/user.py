@@ -1,8 +1,11 @@
 import re
 from typing import Optional
+from datetime import datetime
 
 from pydantic import BaseModel, Field, field_validator
 from uuid import UUID
+
+from app.models.user import UserRole
 
 
 def _validate_password_complexity(value: str) -> str:
@@ -22,6 +25,8 @@ class UserBase(BaseModel):
     email: str = Field(min_length=5, max_length=255)
     first_name: Optional[str] = Field(default=None, max_length=100)
     last_name: Optional[str] = Field(default=None, max_length=100)
+    role: Optional[UserRole] = None
+    subscribed: Optional[bool] = None
 
 
 class UserCreate(UserBase):
@@ -41,6 +46,8 @@ class UserUpdate(BaseModel):
     password: Optional[str] = Field(default=None, min_length=8, max_length=255)
     alert: Optional[bool] = None
     status: Optional[bool] = None
+    role: Optional[UserRole] = None
+    subscribed: Optional[bool] = None
 
     @field_validator("password")
     @classmethod
@@ -54,6 +61,8 @@ class UserOut(UserBase):
     id: UUID
     alert: bool = False
     status: bool = False
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -69,4 +78,3 @@ class UserLoginResponse(BaseModel):
     """Response schema for successful login."""
     user: UserOut
     token: str
-

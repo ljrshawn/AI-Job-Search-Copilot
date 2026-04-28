@@ -5,7 +5,18 @@ info:
 
 http:
   method: POST
-  url: "{{URL}}/resumes/upload"
+  url: "{{URL}}/resumes/upload?user_id={{USER_ID}}"
+  params:
+    - name: user_id
+      value: "{{USER_ID}}"
+      type: query
+  body:
+    type: multipart-form
+    data:
+      - name: file
+        type: file
+        value:
+          - /Users/shawnlyu/Downloads/Shawn_Lyu_resume_cs_2026.pdf
   auth:
     type: bearer
     token: "{{TOKEN}}"
