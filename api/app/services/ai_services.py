@@ -3,8 +3,9 @@ from typing import List
 from openai import OpenAI
 
 from app.core.config import settings
+from app.schemas.job import JobStructured
 from app.schemas.resume import ResumeStructured
-from app.utils.prompt_helper import build_resume_structure_prompt
+from app.utils.prompt_helper import build_job_structure_prompt, build_resume_structure_prompt
 
 _client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
@@ -28,6 +29,27 @@ def parse_resume(text: str) -> ResumeStructured:
         return parsed
 
     return ResumeStructured()
+
+
+def parse_job(text: str) -> JobStructured:
+    """
+    Send job text to OpenAI and extract structured data as a JobStructured object.
+    Uses responses.parse() which handles json_schema + additionalProperties automatically.
+    """
+    prompt = build_job_structure_prompt(text)
+
+    response = _client.responses.parse(
+        model="gpt-5.4-mini",
+        input=prompt,
+        temperature=0,
+        text_format=JobStructured,
+    )
+
+    parsed = response.output_parsed
+    if isinstance(parsed, JobStructured):
+        return parsed
+
+    return JobStructured()
 
 
 def get_embedding(text: str) -> List[float]:

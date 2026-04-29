@@ -1,6 +1,6 @@
 from app.services.ai_services import parse_resume, get_embedding
 from app.utils.file_parser import extract_text
-from app.utils.prompt_helper import build_resume_embedding_prompt
+from app.utils.prompt_helper import build_embedding_prompt
 
 
 def process_resume(file, filename: str):
@@ -15,7 +15,7 @@ def process_resume(file, filename: str):
         structured_dict = structured.model_dump()
 
         # Pass the structured object (not dict) to embedding function
-        embedding_vector = get_embedding(build_resume_embedding_prompt(structured))
+        embedding_vector = get_embedding(build_embedding_prompt(structured))
     except Exception as e:
         print(f"Warning: Could not parse resume with AI: {e}")
 

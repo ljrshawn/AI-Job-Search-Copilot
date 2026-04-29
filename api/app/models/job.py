@@ -10,6 +10,7 @@ class Job(Base):
     origin_id = Column(Integer, nullable=False, unique=True, index=True)
     title = Column(String, nullable=False)
     raw_content = Column(String, nullable=False)
+    raw_text = Column(String, nullable=False)
     structured_data = Column(JSON, nullable=True)
     embedding_vector = Column(ARRAY(Float), nullable=True)
     expires_at = Column(DateTime)

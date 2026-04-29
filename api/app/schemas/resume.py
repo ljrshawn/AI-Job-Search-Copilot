@@ -16,40 +16,12 @@ class ResumeBase(BaseModel):
     activated: bool
 
 
-# -----------------------------
-# AI-parsed structured resume
-# -----------------------------
-class Work(BaseModel):
-    position: str
-    description: str
-
-
-class Education(BaseModel):
-    school: Optional[str]
-    degree: Optional[str]
-    year: Optional[str]
-
-
-class Project(BaseModel):
-    name: Optional[str]
-    description: Optional[str]
-
-
 class ResumeStructured(BaseModel):
     skills: List[str] = Field(default_factory=list)
+    requirements: List[str] = Field(default_factory=list)
     experience_years: Optional[int] = None
-    works: List[Work] = Field(default_factory=list)
-
-    education: List[Education] = Field(default_factory=list)
-    projects: List[Project] = Field(default_factory=list)
-
-    summary: Optional[str] = None
-
-
-class ResumeEmbedded(BaseModel):
-    skills: List[float] = Field(default_factory=list)
-    works: List[Work] = Field(default_factory=list)
-    projects: List[Project] = Field(default_factory=list)
+    seniority: Optional[str] = None
+    domain: Optional[str] = None
     summary: Optional[str] = None
 
 

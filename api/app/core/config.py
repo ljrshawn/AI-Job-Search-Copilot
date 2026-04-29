@@ -12,6 +12,16 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     OPENAI_API_KEY: str
 
+    # SEEK API
+    SEEK_GRAPHQL_URL: str = ""
+    SEEK_IMPERSONATE: str = ""
+    SEEK_SESSION_ID: str = ""
+    SEEK_ZONE: str = ""
+    SEEK_SOL_ID: str = ""
+    SEEK_VISITOR_ID: str = ""
+    SEEK_KEYWORDS: str = ""
+    SEEK_LOCATION: str = ""
+
     @property
     def DATABASE_URL(self) -> str:
         return (
