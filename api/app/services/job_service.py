@@ -1,21 +1,22 @@
 from sqlalchemy.orm import Session
+from typing import cast
 from app.models.job import Job
 from app.schemas.job import JobCreate, JobUpdate
 
 
 def get_job(db: Session, job_id: int) -> Job | None:
     """Get job by ID"""
-    return db.query(Job).filter(Job.id == job_id).first()
+    return cast(Job | None, db.query(Job).filter(Job.id == job_id).first())
 
 
 def get_job_by_origin_id(db: Session, origin_id: int) -> Job | None:
     """Get job by origin_id (SEEK job ID)"""
-    return db.query(Job).filter(Job.origin_id == origin_id).first()
+    return cast(Job | None, db.query(Job).filter(Job.origin_id == origin_id).first())
 
 
 def get_jobs(db: Session, skip: int = 0, limit: int = 100) -> list[Job]:
     """Get all jobs with pagination"""
-    return db.query(Job).offset(skip).limit(limit).all()
+    return cast(list[Job], cast(object, db.query(Job).offset(skip).limit(limit).all()))
 
 
 def create_job(db: Session, job: JobCreate) -> Job:

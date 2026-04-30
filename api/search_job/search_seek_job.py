@@ -4,6 +4,7 @@ import re
 from time import sleep
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 from pydantic import BaseModel
 
@@ -107,16 +108,18 @@ def _to_job_create_payload(job_data: dict) -> JobCreate:
         share_link=job_data.get("shareLink"),
         location=job_data.get("location", {}).get("label") if job_data.get("location") else None,
         advertiser=job_data.get("advertiser", {}).get("name") if job_data.get("advertiser") else None,
-        expires_at=_parse_datetime(
-            job_data.get("expiresAt", {}).get("dateTimeUtc")
-            if job_data.get("expiresAt") else None
-        ),
+        expires_at=_parse_datetime(_get_datetime_utc(job_data.get("expiresAt"))),
         is_expired=job_data.get("isExpired", False),
-        listed_at=_parse_datetime(
-            job_data.get("listedAt", {}).get("dateTimeUtc")
-            if job_data.get("listedAt") else None
-        )
+        listed_at=_parse_datetime(_get_datetime_utc(job_data.get("listedAt"))),
     )
+
+
+def _get_datetime_utc(value: object) -> str | None:
+    """Safely read dateTimeUtc from nested SEEK datetime objects."""
+    if isinstance(value, dict):
+        raw = value.get("dateTimeUtc")
+        return raw if isinstance(raw, str) else None
+    return None
 
 
 def fetch_job_details(job_id: int) -> dict | None:
@@ -211,7 +214,7 @@ def fetch_seek_jobs(payload: SeekPayload) -> list[dict]:
     }
     """
 
-    all_jobs = []
+    all_jobs: list[dict] = []
     page = 1
     total_count = 0
     cutoff_days = 7
@@ -252,8 +255,9 @@ def fetch_seek_jobs(payload: SeekPayload) -> list[dict]:
             print(f"Failed to fetch page {page}. Stopping pagination.")
             break
 
-        jobs = response.get("data", {}).get("jobSearchV6", {}).get("data", [])
-        total_count = response.get("data", {}).get("jobSearchV6", {}).get("totalCount", 0)
+        jobs = cast(list[dict], response.get("data", {}).get("jobSearchV6", {}).get("data", []))
+        total_raw = response.get("data", {}).get("jobSearchV6", {}).get("totalCount", 0)
+        total_count = total_raw if isinstance(total_raw, int) else 0
 
         if not jobs:
             print("No more jobs in this page. Stopping pagination.")
@@ -284,12 +288,21 @@ def fetch_seek_jobs(payload: SeekPayload) -> list[dict]:
 
         page += 1
 
-    print(f"\nSuccess found {total_count} positions! Collected {len(all_jobs)} jobs.\n")
+    collected_count: int = sum(1 for _ in all_jobs)
+    print(f"\nSuccess found {total_count} positions! Collected {collected_count} jobs.\n")
     return all_jobs
 
 
 def _extract_job_id(value: object) -> int | None:
     """Safely parse SEEK job id into int."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        value = value.strip()
+        if not value:
+            return None
     try:
         return int(value) if value is not None else None
     except (TypeError, ValueError):
@@ -300,8 +313,8 @@ def _get_existing_origin_ids(db: Session, job_ids: list[int]) -> set[int]:
     """Load existing job origin_ids in one query for fast dedupe."""
     if not job_ids:
         return set()
-    rows = db.query(Job.origin_id).filter(Job.origin_id.in_(job_ids)).all()
-    return {row[0] for row in rows}
+    rows = cast(list[tuple[int | None]], db.query(Job.origin_id).filter(Job.origin_id.in_(job_ids)).all())
+    return {origin_id for (origin_id,) in rows if origin_id is not None}
 
 
 def save_seek_jobs_to_db(payload: SeekPayload) -> int:

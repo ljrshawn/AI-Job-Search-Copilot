@@ -57,3 +57,14 @@ class JobOut(JobBase):
 
     class Config:
         from_attributes = True
+
+
+class JobMatchOut(BaseModel):
+    id: int
+    title: str
+    raw_content: str
+    share_link: Optional[str] = None
+    score: float
+    listed_at: Optional[datetime] = None
+    expires_at: Optional[datetime] = None
+    location: Optional[str] = None

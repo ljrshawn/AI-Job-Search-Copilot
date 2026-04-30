@@ -1,5 +1,5 @@
-from sqlalchemy import JSON, Column, DateTime, Float, Integer, String, Boolean, func
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import JSON, Column, DateTime, Integer, String, Boolean, func
+from pgvector.sqlalchemy import Vector
 from app.db.base import Base
 
 
@@ -12,7 +12,7 @@ class Job(Base):
     raw_content = Column(String, nullable=False)
     raw_text = Column(String, nullable=False)
     structured_data = Column(JSON, nullable=True)
-    embedding_vector = Column(ARRAY(Float), nullable=True)
+    embedding_vector = Column(Vector(), nullable=True)
     expires_at = Column(DateTime)
     is_expired = Column(Boolean, default=False)
     listed_at = Column(DateTime)
