@@ -12,8 +12,10 @@ export default function DashboardPage() {
     // If not authenticated, redirect to login
     if (status === "unauthenticated") {
       router.push("/login");
+    } else if (session?.needsSignup) {
+      router.push("/signup");
     }
-  }, [status, router]);
+  }, [session, status, router]);
 
   if (status === "loading") {
     return (

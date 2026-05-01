@@ -78,3 +78,28 @@ class UserLoginResponse(BaseModel):
     """Response schema for successful login."""
     user: UserOut
     token: str
+
+
+class GoogleLogin(BaseModel):
+    """Request schema for Google OAuth login."""
+    access_token: str = Field(min_length=1)
+    id_token: Optional[str] = None
+    email: str = Field(min_length=5, max_length=255)
+    name: Optional[str] = Field(default=None, max_length=255)
+    image: Optional[str] = None
+
+
+class GoogleSignup(BaseModel):
+    """Request schema for completing signup after Google OAuth."""
+    access_token: str = Field(min_length=1)
+    email: str = Field(min_length=5, max_length=255)
+    username: str = Field(min_length=3, max_length=50)
+    first_name: Optional[str] = Field(default=None, max_length=100)
+    last_name: Optional[str] = Field(default=None, max_length=100)
+    password: str = Field(min_length=8, max_length=255)
+    role: UserRole
+
+    @field_validator("password")
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        return _validate_password_complexity(value)

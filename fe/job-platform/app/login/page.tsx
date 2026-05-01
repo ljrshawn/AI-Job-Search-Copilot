@@ -24,7 +24,7 @@ type LoginFormValues = {
 
 export default function LoginPage() {
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,10 +33,15 @@ export default function LoginPage() {
   const { errors } = form.formState;
 
   useEffect(() => {
+    if (session?.needsSignup) {
+      router.push("/signup");
+      return;
+    }
+
     if (status === "authenticated") {
       router.push("/dashboard");
     }
-  }, [status, router]);
+  }, [session?.needsSignup, status, router]);
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     setIsLoading(true);

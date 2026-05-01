@@ -11,12 +11,14 @@ export default function RootPage() {
   useEffect(() => {
     if (status === "loading") return;
 
-    if (status === "authenticated") {
+    if (session?.needsSignup) {
+      router.push("/signup");
+    } else if (status === "authenticated") {
       router.push("/dashboard");
     } else {
       router.push("/login");
     }
-  }, [status, router]);
+  }, [session?.needsSignup, status, router]);
 
   return (
     <div className="flex h-screen items-center justify-center">
