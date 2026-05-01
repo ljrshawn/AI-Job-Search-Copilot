@@ -32,7 +32,7 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold">Dashboard</h1>
             </div>
             <div className="flex items-center gap-4">
-              <p className="text-gray-700">{session?.user?.email}</p>
+              <p className="text-gray-700">{session?.user?.name}</p>
               <button
                 onClick={() => signOut()}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
