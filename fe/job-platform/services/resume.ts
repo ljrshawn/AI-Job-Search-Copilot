@@ -1,25 +1,11 @@
+import type {
+  Resume,
+  ResumePayload,
+  ResumeUploadPayload,
+} from "@/types/resume-types";
+import { resumeSchema } from "@/types/resume-types";
 import { apiClient } from "./api-client";
-
-export type Resume = {
-  id: number;
-  user_id: string;
-  file_name: string;
-  raw_text: string;
-  structured_data: Record<string, unknown> | null;
-  embedding_vector: number[] | null;
-  created_at: string | null;
-  updated_at: string | null;
-  activated: boolean;
-};
-
-export type ResumePayload = {
-  user_id: string;
-  token: string;
-};
-
-export type ResumeUploadPayload = {
-  file: File;
-} & ResumePayload;
+import { jobMatchesSchema, type JobMatch } from "@/types/job-types";
 
 export const getResume = async (
   payload: ResumePayload,
@@ -41,7 +27,7 @@ export const getResume = async (
     throw new Error("Failed to get resume");
   }
 
-  return response.json();
+  return resumeSchema.parse(await response.json());
 };
 
 export const uploadResume = async (
@@ -63,5 +49,25 @@ export const uploadResume = async (
     throw new Error("Failed to upload resume");
   }
 
-  return response.json();
+  return resumeSchema.parse(await response.json());
+};
+
+export const matchResumeToAllJob = async (
+  payload: ResumePayload,
+): Promise<JobMatch[]> => {
+  const response = await apiClient.get<JobMatch[]>("/match/", {
+    headers: {
+      Authorization: `Bearer ${payload.token}`,
+    },
+  });
+
+  if (response.status === 404) {
+    return [];
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to match resume to job");
+  }
+
+  return jobMatchesSchema.parse(await response.json());
 };

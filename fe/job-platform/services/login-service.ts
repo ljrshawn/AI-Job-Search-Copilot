@@ -1,28 +1,34 @@
+import { z } from "zod";
 import { apiClient } from "@/services/api-client";
+
+export const userRoleSchema = z.enum(["seeker", "poster"]);
 
 export enum UserRole {
   SEEKER = "seeker",
   POSTER = "poster",
 }
 
-export type AuthUser = {
-  username: string;
-  email: string;
-  first_name: string | null;
-  last_name: string | null;
-  role: UserRole | null;
-  subscribed: boolean | null;
-  id: string;
-  alert: boolean;
-  status: boolean;
-  created_at: string | null;
-  updated_at: string | null;
-};
+export const authUserSchema = z.object({
+  username: z.string(),
+  email: z.string(),
+  first_name: z.string().nullable(),
+  last_name: z.string().nullable(),
+  role: userRoleSchema.nullable(),
+  subscribed: z.boolean().nullable(),
+  id: z.string(),
+  alert: z.boolean(),
+  status: z.boolean(),
+  created_at: z.string().nullable(),
+  updated_at: z.string().nullable(),
+});
 
-export type LoginResponse = {
-  user: AuthUser;
-  token: string;
-};
+export const loginResponseSchema = z.object({
+  user: authUserSchema,
+  token: z.string(),
+});
+
+export type AuthUser = z.infer<typeof authUserSchema>;
+export type LoginResponse = z.infer<typeof loginResponseSchema>;
 
 export type LoginCredentials = {
   email: string;
@@ -71,7 +77,7 @@ export async function loginUser({
     throw new Error("Invalid email or password");
   }
 
-  return response.json();
+  return loginResponseSchema.parse(await response.json());
 }
 
 export async function loginWithGoogle({
@@ -101,7 +107,7 @@ export async function loginWithGoogle({
     throw new Error("Unable to log in with Google");
   }
 
-  return response.json();
+  return loginResponseSchema.parse(await response.json());
 }
 
 export async function signupWithGoogle({
@@ -131,5 +137,5 @@ export async function signupWithGoogle({
     throw new Error("Unable to complete Google signup");
   }
 
-  return response.json();
+  return loginResponseSchema.parse(await response.json());
 }
