@@ -16,6 +16,12 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
+import {
+  UploadFileButton,
+  type FileUploadPayload,
+} from "@/components/uploadFileButton";
+import { uploadResume } from "@/services/resume";
+import { useCurrentResume } from "@/services/resume-hooks";
 
 const stats = [
   {
@@ -98,15 +104,49 @@ const tasks = [
 ];
 
 const weeklyActivity = [45, 70, 52, 88, 64, 76, 58];
+const resumeFileTypes = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
 
 function getGreeting(name?: string | null) {
   const firstName = name?.trim().split(" ")[0];
   return firstName ? `Welcome back, ${firstName}` : "Welcome back";
 }
 
+async function uploadResumeFile({ file, userId, token }: FileUploadPayload) {
+  const resume = await uploadResume({
+    file,
+    user_id: userId,
+    token,
+  });
+
+  return {
+    fileName: resume.file_name,
+  };
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const resumeQuery = useCurrentResume(
+    session?.user?.id && session.accessToken
+      ? {
+          user_id: session.user.id,
+          token: session.accessToken,
+        }
+      : undefined,
+  );
+
+  const historyFiles = resumeQuery.data
+    ? [
+        {
+          id: String(resumeQuery.data.id),
+          fileName: resumeQuery.data.file_name,
+        },
+      ]
+    : [];
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -144,10 +184,15 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline">
-              <Upload className="size-4" />
-              Resume
-            </Button>
+            <UploadFileButton
+              userId={session?.user?.id}
+              token={session?.accessToken}
+              acceptedFileTypes={resumeFileTypes}
+              uploadFn={uploadResumeFile}
+              historyFiles={historyFiles}
+              isHistoryLoading={resumeQuery.isLoading}
+              onUploadSuccess={() => resumeQuery.refetch()}
+            />
             <Button>
               <Search className="size-4" />
               Find roles

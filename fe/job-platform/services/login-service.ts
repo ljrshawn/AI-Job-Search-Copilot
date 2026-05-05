@@ -1,4 +1,4 @@
-import { env, requireEnv } from "@/lib/config";
+import { apiClient } from "@/services/api-client";
 
 export enum UserRole {
   SEEKER = "seeker",
@@ -54,28 +54,18 @@ export class GoogleSignupRequiredError extends Error {
   }
 }
 
-async function postAuth<TResponse>(path: string, body: unknown) {
-  const apiBaseUrl = requireEnv(env.apiBaseUrl, "API_BASE_URL");
-
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  return response as Response & { json(): Promise<TResponse> };
-}
-
 export async function loginUser({
   email,
   password,
 }: LoginCredentials): Promise<LoginResponse> {
-  const response = await postAuth<LoginResponse>("/auth/login", {
-    email,
-    password,
-  });
+  const response = await apiClient.post<LoginResponse>(
+    "/auth/login",
+    {
+      email,
+      password,
+    },
+    { handleUnauthorized: false },
+  );
 
   if (!response.ok) {
     throw new Error("Invalid email or password");
@@ -91,13 +81,17 @@ export async function loginWithGoogle({
   name,
   image,
 }: GoogleLoginPayload): Promise<LoginResponse> {
-  const response = await postAuth<LoginResponse>("/auth/google", {
-    access_token: accessToken,
-    id_token: idToken,
-    email,
-    name,
-    image,
-  });
+  const response = await apiClient.post<LoginResponse>(
+    "/auth/google",
+    {
+      access_token: accessToken,
+      id_token: idToken,
+      email,
+      name,
+      image,
+    },
+    { handleUnauthorized: false },
+  );
 
   if (response.status === 404) {
     throw new GoogleSignupRequiredError();
@@ -119,15 +113,19 @@ export async function signupWithGoogle({
   password,
   role,
 }: GoogleSignupPayload): Promise<LoginResponse> {
-  const response = await postAuth<LoginResponse>("/auth/google/signup", {
-    access_token: accessToken,
-    email,
-    username,
-    first_name,
-    last_name,
-    password,
-    role,
-  });
+  const response = await apiClient.post<LoginResponse>(
+    "/auth/google/signup",
+    {
+      access_token: accessToken,
+      email,
+      username,
+      first_name,
+      last_name,
+      password,
+      role,
+    },
+    { handleUnauthorized: false },
+  );
 
   if (!response.ok) {
     throw new Error("Unable to complete Google signup");

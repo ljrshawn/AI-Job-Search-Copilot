@@ -1,15 +1,13 @@
-const getEnv = (key: string, fallback = "") => process.env[key] ?? fallback;
-
 export const env = {
   apiBaseUrl:
-    getEnv("API_BASE_URL") || getEnv("NEXT_PUBLIC_API_BASE_URL"),
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL ?? "",
   google: {
-    clientId: getEnv("GOOGLE_CLIENT_ID"),
-    clientSecret: getEnv("GOOGLE_CLIENT_SECRET"),
+    clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
   },
   nextAuth: {
-    url: getEnv("NEXTAUTH_URL"),
-    secret: getEnv("NEXTAUTH_SECRET"),
+    url: process.env.NEXTAUTH_URL ?? "",
+    secret: process.env.NEXTAUTH_SECRET ?? "",
   },
 } as const;
 
