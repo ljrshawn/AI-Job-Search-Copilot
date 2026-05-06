@@ -4,11 +4,14 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "AI Job Search Copilot",
   description: "Find your perfect job match",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

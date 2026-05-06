@@ -1,4 +1,8 @@
-import { LayoutDashboard, Bell, LogOut } from "lucide-react";
+"use client";
+
+import { ArrowLeft, LayoutDashboard, Bell, LogOut } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { AvatarImage, AvatarFallback, Avatar } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -13,6 +17,8 @@ import {
 
 export const Header = () => {
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const showDashboardLink = pathname !== "/dashboard";
 
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -32,6 +38,14 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          {showDashboardLink && (
+            <Button variant="outline" size="sm" asChild>
+              <Link href="/dashboard">
+                <ArrowLeft className="size-4" />
+                Dashboard
+              </Link>
+            </Button>
+          )}
           <Button variant="outline" size="icon" aria-label="Notifications">
             <Bell className="size-4" />
           </Button>

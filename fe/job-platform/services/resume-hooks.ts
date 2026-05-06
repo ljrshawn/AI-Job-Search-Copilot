@@ -6,11 +6,17 @@ import {
   matchResumeToAllJob,
   uploadResume,
 } from "@/services/resume";
-import type { ResumePayload, ResumeUploadPayload } from "@/types/resume-types";
+import type {
+  MatchJobsPayload,
+  ResumePayload,
+  ResumeUploadPayload,
+} from "@/types/resume-types";
 
 export const resumeKeys = {
   all: ["resumes"] as const,
   current: (userId?: string) => [...resumeKeys.all, "current", userId] as const,
+  matches: (userId?: string, skip = 0, limit = 10) =>
+    [...resumeKeys.all, "matches", userId, skip, limit] as const,
 };
 
 export function useCurrentResume(payload?: ResumePayload) {
@@ -41,13 +47,9 @@ export function useUploadResume() {
   });
 }
 
-export function useMatchResumeToAllJob(payload?: ResumePayload) {
+export function useMatchResumeToAllJob(payload?: MatchJobsPayload) {
   return useQuery({
-    queryKey: [
-      "match-resume-to-all-jobs",
-      "current",
-      payload?.user_id,
-    ] as const,
+    queryKey: resumeKeys.matches(payload?.user_id, payload?.skip, payload?.limit),
     queryFn: () => {
       if (!payload) {
         throw new Error("Missing resume query payload");

@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from starlette import status
 
@@ -17,6 +17,8 @@ router = APIRouter(prefix="/match", tags=["match"])
 @router.post("/{resume_id}", response_model=List[JobMatchOut], status_code=status.HTTP_200_OK)
 def match_resume_by_id(
         resume_id: int,
+        skip: int = Query(default=0, ge=0),
+        limit: int = Query(default=10, ge=1, le=100),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user),
 ):
@@ -37,13 +39,15 @@ def match_resume_by_id(
         raise HTTPException(status_code=400, detail="Resume does not have an embedding vector")
 
     # Match jobs using the embedding vector
-    matched_jobs = match_jobs(db, resume)
+    matched_jobs = match_jobs(db, resume, skip=skip, limit=limit)
 
     return matched_jobs
 
 
 @router.get("/", response_model=List[JobMatchOut], status_code=status.HTTP_200_OK)
 def match_resume(
+        skip: int = Query(default=0, ge=0),
+        limit: int = Query(default=10, ge=1, le=100),
         db: Session = Depends(get_db),
         current_user: User = Depends(get_current_user),
 ):
@@ -64,6 +68,6 @@ def match_resume(
         raise HTTPException(status_code=400, detail="Resume does not have an embedding vector")
 
     # Match jobs using the embedding vector
-    matched_jobs = match_jobs(db, resume)
+    matched_jobs = match_jobs(db, resume, skip=skip, limit=limit)
 
     return matched_jobs

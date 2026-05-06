@@ -19,6 +19,11 @@ export type ResumePayload = {
   token: string;
 };
 
+export type MatchJobsPayload = ResumePayload & {
+  skip?: number;
+  limit?: number;
+};
+
 export type ResumeUploadPayload = {
   file: File;
 } & ResumePayload;

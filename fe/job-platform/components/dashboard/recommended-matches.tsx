@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 export type RecommendedMatch = {
   id: string;
@@ -49,6 +50,8 @@ function getReadableJobContent(html: string) {
 }
 
 export function RecommendedMatches({ matches }: RecommendedMatchesProps) {
+  const router = useRouter();
+
   return (
     <section>
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -60,7 +63,11 @@ export function RecommendedMatches({ matches }: RecommendedMatchesProps) {
             Ranked by resume fit and recent market signals.
           </p>
         </div>
-        <Button variant="outline" size="sm">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push("/jobs")}
+        >
           View all
         </Button>
       </div>

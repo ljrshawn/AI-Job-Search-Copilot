@@ -8,7 +8,12 @@ from app.models.resume import Resume
 from app.schemas.job import JobMatchOut
 
 
-def match_jobs(db: Session, resume: Resume, limit: int = 10) -> List[JobMatchOut]:
+def match_jobs(
+    db: Session,
+    resume: Resume,
+    skip: int = 0,
+    limit: int = 10,
+) -> List[JobMatchOut]:
     """
     Return ranked jobs by cosine similarity.
     """
@@ -20,6 +25,7 @@ def match_jobs(db: Session, resume: Resume, limit: int = 10) -> List[JobMatchOut
         db.query(Job, score_expr)
         .filter(Job.embedding_vector.isnot(None))
         .order_by(desc(score_expr))
+        .offset(skip)
         .limit(limit)
         .all()
     )

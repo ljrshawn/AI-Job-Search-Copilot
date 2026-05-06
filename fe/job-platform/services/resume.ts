@@ -1,5 +1,6 @@
 import type {
   Resume,
+  MatchJobsPayload,
   ResumePayload,
   ResumeUploadPayload,
 } from "@/types/resume-types";
@@ -53,11 +54,15 @@ export const uploadResume = async (
 };
 
 export const matchResumeToAllJob = async (
-  payload: ResumePayload,
+  payload: MatchJobsPayload,
 ): Promise<JobMatch[]> => {
   const response = await apiClient.get<JobMatch[]>("/match/", {
     headers: {
       Authorization: `Bearer ${payload.token}`,
+    },
+    query: {
+      skip: payload.skip,
+      limit: payload.limit,
     },
   });
 

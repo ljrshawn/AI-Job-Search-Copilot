@@ -16,7 +16,10 @@ import {
   RecommendedMatches,
   type RecommendedMatch,
 } from "@/components/dashboard/recommended-matches";
-import { StatsGrid, type DashboardStat } from "@/components/dashboard/stats-grid";
+import {
+  StatsGrid,
+  type DashboardStat,
+} from "@/components/dashboard/stats-grid";
 import { Header } from "@/components/header";
 import type { FileUploadPayload } from "@/components/uploadFileButton";
 import { uploadResume } from "@/services/resume";
@@ -70,6 +73,7 @@ export default function DashboardPage() {
   const matchedRoleCount = matchJobs.isLoading
     ? "—"
     : String(matchJobs.data?.length ?? 0);
+
   const bestMatchScore = matchJobs.data?.[0]
     ? `${Math.round(matchJobs.data[0].score * 100)}%`
     : "—";
