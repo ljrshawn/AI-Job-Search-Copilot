@@ -9,10 +9,10 @@ from app.schemas.job import JobMatchOut
 
 
 def match_jobs(
-    db: Session,
-    resume: Resume,
-    skip: int = 0,
-    limit: int = 10,
+        db: Session,
+        resume: Resume,
+        skip: int = 0,
+        limit: int = 10,
 ) -> List[JobMatchOut]:
     """
     Return ranked jobs by cosine similarity.
