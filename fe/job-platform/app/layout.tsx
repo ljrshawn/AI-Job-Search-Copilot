@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "AI Job Search Copilot",
   description: "Find your perfect job match",
   icons: {
-    icon: "/favicon.png",
+    icon: "https://shawnl.dev/public/favicon.svg",
   },
 };
 
